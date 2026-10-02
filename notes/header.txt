@@ -1,0 +1,25 @@
+signature      : b'MZ'
+e_cblp         : 0x00e0 (bytes on last page)
+e_cp           : 0x0013 (pages, 512 bytes each)
+e_crlc         : 1 (relocation entries)
+e_cparhdr      : 0x0020 (header size, paragraphs)
+e_minalloc     : 0x0000
+e_maxalloc     : 0xffff
+e_ss:e_sp      : 020e:0200 (initial stack)
+e_csum         : 0xb0d5
+e_cs:e_ip      : 0000:0448 (entry point, seg rel to load segment)
+e_lfarlc       : 0x001c (relocation table file offset)
+e_ovno         : 0 (overlay number)
+
+header size (bytes)      : 512
+total image size (bytes) : 9440
+load module size (bytes) : 8928
+actual file size on disk : 9728
+trailing bytes past image: 288
+
+relocation table:
+  [0] segment=0000 offset=044b
+
+entry point offset within load module: 0x0448
+
+wrote raw load module (header stripped, no relocation applied) to: C:/Users/talne/Desktop/ClaudeCodePicoCalc/chess-reverse/original/CHESS_loadmodule.bin
