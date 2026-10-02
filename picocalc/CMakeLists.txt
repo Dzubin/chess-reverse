@@ -80,6 +80,7 @@ target_include_directories(chess-picocalc PRIVATE
 target_link_libraries(chess-picocalc
     pico_stdlib
     hardware_spi
+    hardware_watchdog   # watchdog_reboot(): leaving for the UF2 Loader
     hardware_i2c
     hardware_pio
     hardware_clocks

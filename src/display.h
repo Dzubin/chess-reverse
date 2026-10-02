@@ -27,4 +27,11 @@ int display_get_human_move(board_t *b, move_t *out_move);
    adds a random delay - see display_picocalc.c. */
 void display_computer_thinking(void);
 
+/* Called once when the game is over (mate, stalemate, or the player quit),
+   just before main() returns. player_quit is 1 if the player chose to quit.
+   Desktop backends no-op and main() simply returns; PicoCalc leaves for the
+   UF2 Loader's menu (after a key press when the game ended on its own, so
+   the result can be read) - see display_picocalc.c. */
+void display_finish(int player_quit);
+
 #endif

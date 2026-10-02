@@ -103,3 +103,9 @@ void display_computer_thinking(void)
 {
     /* no artificial delay on the console - depth already sets the pace */
 }
+
+/* Nothing to do at the end of a game on a desktop terminal or window. */
+void display_finish(int player_quit)
+{
+    (void)player_quit;
+}

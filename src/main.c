@@ -13,6 +13,7 @@ int main(void)
 {
     board_t board;
     int human_color, depth;
+    int player_quit = 0;
 
     printf("CHESS - a C rewrite of a 1980s DOS chess program\n\n");
 
@@ -47,6 +48,7 @@ int main(void)
             move_t chosen;
             if (!display_get_human_move(&board, &chosen)) {
                 display_message("GOODBYE");
+                player_quit = 1;
                 break;
             }
             make_move(&board, &chosen);
@@ -63,6 +65,7 @@ int main(void)
         }
     }
 
+    display_finish(player_quit);
     return 0;
 }
 

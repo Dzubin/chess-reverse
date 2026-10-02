@@ -82,9 +82,17 @@ understood, modified, and recompiled. Identified from embedded strings as
       or an illegal destination) plays a short beep
       (`audio_play_sound_blocking`, `drivers/audio.c`) instead of doing
       anything - no keyboard typing involved anywhere. ESC cancels a
-      pick-up, or resigns if nothing's picked up. This is the same
+      pick-up (and does nothing if nothing's picked up). This is the same
       lift-and-place idea the original used with DEL/INS (see
       `notes/analysis.md`), just on arrow keys instead.
+    - **`Q`** brings up a "QUIT GAME?" confirmation; Y quits. When the game
+      ends (a quit, mate or stalemate) the PicoCalc leaves for the **UF2
+      Loader** menu (`display_finish()` in `picocalc/display_picocalc.c`):
+      straight away after a quit, and after a key press when the game ended
+      on its own, so the result can be read. It asks the loader for its menu
+      through the watchdog scratch registers (constants in
+      `picocalc/loader_const.h`); with no loader installed the program just
+      restarts, and on a PC it closes.
     - **`~`** (SHIFT+backtick) reboots to BOOTSEL from every single
       keyboard read in the file - splash, prompts, move input, all of it,
       via one shared helper - so reflashing never needs the physical

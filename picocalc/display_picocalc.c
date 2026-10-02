@@ -6,7 +6,9 @@
 #include "drivers/keyboard.h"
 #include "drivers/audio.h"
 #include "pico/bootrom.h"  /* reset_usb_boot() - BOOTSEL reboot ('~') */
+#include "hardware/watchdog.h" /* watchdog_hw, watchdog_reboot() - exit to the UF2 Loader */
 #include "pico/stdlib.h"
+#include "loader_const.h"  /* the UF2 Loader hand-off values */
 #include "pico/time.h"     /* time_us_64() - random seed, see display_computer_thinking() */
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +26,8 @@
      cancels a pick-up, and does nothing at all if nothing's picked up -
      it never quits. Q or q brings up a "QUIT GAME?" confirmation screen;
      only Y/y actually quits, any other key dismisses it and returns to
-     the game exactly where it was.
+     the game exactly where it was. When the game ends (a quit, mate or
+     stalemate) display_finish() leaves for the PicoCalc UF2 Loader menu.
    - '~' (SHIFT+backtick) reboots to BOOTSEL from every single keyboard
      read in this file - splash, prompts, move input, all of it - via the
      one shared read_key_blocking() helper below.
@@ -118,12 +121,50 @@ void display_board(const board_t *b)
     board_render(b);
 }
 
-void display_message(const char *msg)
+/* Writes msg on a text row over the top of the board, on a black bar. */
+static void message_row(int row, const char *msg)
 {
-    lcd_solid_rectangle(RGB(0, 0, 0), 0, 0, WIDTH, GLYPH_HEIGHT);
+    lcd_solid_rectangle(RGB(0, 0, 0), 0, (uint16_t)(row * GLYPH_HEIGHT), WIDTH, GLYPH_HEIGHT);
     lcd_set_foreground(RGB(255, 255, 255));
     lcd_set_background(RGB(0, 0, 0));
-    lcd_putstr(0, 0, msg);
+    lcd_putstr(0, (uint8_t)row, msg);
+}
+
+void display_message(const char *msg)
+{
+    message_row(0, msg);
+}
+
+/* Leaves the program for the PicoCalc UF2 Loader's menu: shows a short
+   message, asks the loader for its menu (see LOADER_COMMAND_MAGIC in
+   loader_const.h) and reboots with the watchdog. If the program was flashed
+   straight to the chip with no loader, nothing reads the request and it
+   simply restarts. The Windows / Linux build uses a stand-in watchdog that
+   closes the program. */
+static void exit_to_loader(void)
+{
+    message_row(0, "BACK TO THE LOADER...");
+    sleep_ms(LOADER_EXIT_MSG_MS);
+
+    watchdog_hw->scratch[LOADER_SCRATCH_MODE] = LOADER_BOOT_MODE_SD;
+    watchdog_hw->scratch[LOADER_SCRATCH_ARGUMENT] = 0;
+    watchdog_hw->scratch[LOADER_SCRATCH_MAGIC] = LOADER_COMMAND_MAGIC;
+    watchdog_reboot(0, 0, LOADER_REBOOT_DELAY_MS);
+
+    for (;;)
+        tight_loop_contents();      /* the reboot comes in a few milliseconds */
+}
+
+/* The game is over. After a quit the loader menu follows at once (GOODBYE is
+   already on screen); after mate or stalemate the result stays up until a key
+   is pressed, so it can be read. '~' still goes to BOOTSEL. */
+void display_finish(int player_quit)
+{
+    if (!player_quit) {
+        message_row(FINISH_ROW_PROMPT, "ANY KEY: BACK TO THE LOADER");
+        (void)read_key_blocking();
+    }
+    exit_to_loader();
 }
 
 int display_ask_color(void)
