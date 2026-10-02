@@ -9,14 +9,19 @@ understood, modified, and recompiled. Identified from embedded strings as
 
 ## Folders
 
-- `original/` — the untouched original `CHESS.EXE`, plus a raw extracted
+- `original/` — **not included in this repository** (the original program is
+  not mine to redistribute, so the folder is in `.gitignore`; put your own
+  copy of `CHESS.EXE` there to follow the analysis). It holds the untouched
+  original `CHESS.EXE`, plus a raw extracted
   load module (`CHESS_loadmodule.bin`, header stripped, no relocation
   applied — for quick byte-level poking, not authoritative).
 - `disasm/` — generated disassembly (`chess_disasm.txt`) and Ghidra
   decompiler pseudocode (`chess_decompiled.c`) for all 38 functions Ghidra
   found. Regenerated from `ghidra_project/` — see `notes/analysis.md` for
   the exact commands.
-- `ghidra_project/` — the Ghidra project database (`ChessProject`). Open
+- `ghidra_project/` — **not included in this repository** (it is generated from
+  `original/`; recreate it with the commands in `notes/analysis.md`). The
+  Ghidra project database (`ChessProject`). Open
   this in the Ghidra GUI to browse/annotate interactively instead of
   reading the flat text exports.
 - `notes/` — working analysis notes (`analysis.md`), the MZ-header parser
@@ -97,14 +102,11 @@ understood, modified, and recompiled. Identified from embedded strings as
       keyboard read in the file - splash, prompts, move input, all of it,
       via one shared helper - so reflashing never needs the physical
       BOOTSEL button. Built early and deliberately, since without it every
-      iteration during development would need it (see the project memory
-      on this - it's a first principle for any new PicoCalc project now,
-      not just this one).
+      iteration during development would need it.
 
     Keyboard reading is Blair Leduc's `southbridge.c`/`sb_read_keyboard()`,
     called directly rather than through his higher-level `keyboard.c`
-    wrapper (same pattern every other PicoCalc project on this machine
-    uses - see `drivers/README.md`). Build (needs `PICO_SDK_PATH` and the
+    wrapper (see `drivers/README.md`). Build (needs `PICO_SDK_PATH` and the
     ARM toolchain on `PATH`; `PICO_BOARD` is left commented out in
     `CMakeLists.txt` per usual - pass it on the command line):
 
@@ -121,16 +123,16 @@ understood, modified, and recompiled. Identified from embedded strings as
   small C++ host tools the SDK builds from source the first time) fails
   with "Application Control policy has blocked this file" (Windows Smart
   App Control blocking a freshly-built test executable from running),
-  point at already-built copies from any other PicoCalc project's build
-  directory instead of letting CMake rebuild them - `pioasm`'s override
-  isn't SDK-provided, `CMakeLists.txt` here adds it specifically for this:
+  point at already-built copies from an earlier build directory (any
+  Pico SDK build that has compiled them) instead of letting CMake rebuild
+  them - `pioasm`'s override isn't SDK-provided, `CMakeLists.txt` here adds
+  it specifically for this:
 
-      -Dpicotool_DIR=<path to that project's build>/_deps/picotool
-      -DPIOASM_EXECUTABLE=<path to that project's build>/pioasm-install/pioasm/pioasm.exe
+      -Dpicotool_DIR=<path to that build>/_deps/picotool
+      -DPIOASM_EXECUTABLE=<path to that build>/pioasm-install/pioasm/pioasm.exe
 
-  The `pioasm` one must be building something with PIO for this to
-  exist - `audio.c` (this project) or `audio.pio`/similar in whichever
-  project you're borrowing from.
+  The `pioasm` one only exists in a build that compiled something with PIO
+  (an `audio.pio` or similar).
 
   **Windows build.** The same PicoCalc code (`picocalc/display_picocalc.c`,
   `picocalc/gfx_picocalc.c` and the shared `src/` core) also runs on Windows
@@ -182,3 +184,7 @@ playable on real PicoCalc hardware (see `picocalc/` above) - board and
 pieces render correctly with proper contrast on both square colors, moves
 are typed on the PicoCalc's own keyboard, and `~` reliably reboots to
 BOOTSEL from anywhere in the game, all confirmed on the actual device.
+
+## License
+
+MIT, see `LICENSE`, for the code written here. The original `CHESS.EXE` (CHESS88 by Don Berg) is not part of this repository and is not covered by that license. The vendored drivers from `picocalc-text-starter` by Blair Leduc keep their own license (see `picocalc/drivers/LICENSE-picocalc-text-starter.txt`).

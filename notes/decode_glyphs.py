@@ -1,7 +1,7 @@
 import zlib, struct
 from parse_hex import parse_hex_dump
 
-data = bytes(parse_hex_dump(r"C:\Users\talne\Desktop\ClaudeCodePicoCalc\chess-reverse\notes\glyph_raw_hex.txt"))
+data = bytes(parse_hex_dump("glyph_raw_hex.txt"))
 print("total bytes parsed:", len(data))
 
 GLYPH_BYTES = 120
@@ -62,6 +62,6 @@ for gi in range(N_GLYPHS):
                     if px >= img_w: continue
                     pixels[py][px] = color
 
-out = r"C:\Users\talne\AppData\Local\Temp\claude\C--Users-talne-Desktop-ClaudeCodePicoCalc-picocalc-music-maker\abf1a0c1-f660-46fc-8634-0d1c6298cf80\scratchpad\glyphs_preview2.png"
+out = "glyphs_preview2.png"
 write_png(out, img_w, img_h, pixels)
 print("wrote", out, img_w, img_h)
