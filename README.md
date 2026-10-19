@@ -187,4 +187,6 @@ BOOTSEL from anywhere in the game, all confirmed on the actual device.
 
 ## License
 
-MIT, see `LICENSE`, for the code written here. The original `CHESS.EXE` (CHESS88 by Don Berg) is not part of this repository and is not covered by that license. The vendored drivers from `picocalc-text-starter` by Blair Leduc keep their own license (see `picocalc/drivers/LICENSE-picocalc-text-starter.txt`).
+MIT, see `LICENSE`, for the code written here. The original `CHESS.EXE` (CHESS88 by Don Berg) is not part of this repository and is not covered by that license. The vendored drivers from `picocalc-text-starter` by Blair Leduc keep their own license (see `picocalc/drivers/LICENSE-picocalc-text-starter.txt`). They are his code of
+2026-10-18 (commit `85a002e`) with one local change: `lcd_putstr()` in `lcd.c` cuts a string off at the right
+edge of the display.
